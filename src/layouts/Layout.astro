@@ -16,7 +16,7 @@ const { title } = Astro.props;
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
 	</head>
-	<body>
+	<body class="before:content-[''] before:block before:fixed before:inset-0 before:z-0 before:h-full before:min-h-full before:bg-[url('/bg-image.webp')] before:bg-no-repeat before:bg-center before:bg-cover before:opacity-15 before:blur-2xl bg-black text-teal-200 font-mono">
 		<slot />
 	</body>
 </html>

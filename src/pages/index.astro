@@ -1,9 +1,16 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+import MainForm from '../components/MainForm.astro';
 ---
 
 <Layout title="Prompt Enhancer">
-	<main>
-		
+	<main class="relative z-10">
+		<Navbar/>
+		<section class="pt-10">
+			<h1 class="text-4xl font-semibold text-center mt-8">Welcome to Prompt Enhancer</h1>
+			<p class="text-center mt-4">A simple tool to improve your artificial intelligence promts</p>
+			<MainForm/>
+		</section>
 	</main>
 </Layout>
