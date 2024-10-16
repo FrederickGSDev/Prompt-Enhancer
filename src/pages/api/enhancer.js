@@ -2,8 +2,6 @@ export const GET = async ({ params, request }) => {
   const url = new URL(request.url);
   const prompt = url.searchParams.get('prompt');
 
-  console.log(import.meta.env.API_KEY);
-
   const response = await fetch("https://ai-api.koyeb.app/api/enhancer/enhance", {
     method: "POST",
     headers: {
