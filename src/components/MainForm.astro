@@ -3,15 +3,67 @@
 ---
 
 <form class="flex flex-col items-center justify-center pt-10">
-  <textarea name="prompt" id="prompt" class="w-1/3 resize-none border border-teal-200 bg-transparent rounded-lg p-2 outline-none" rows="8" placeholder="Write your prompt here..."></textarea>
+  <div class="w-1/3 relative">
+    <textarea name="prompt" id="prompt" class="w-full resize-none border border-teal-200 bg-teal-900 bg-opacity-15 rounded-lg p-2 outline-none relative" rows="8" placeholder="Write your prompt here..."></textarea>
+    <button type="button" id="copyButton" class="absolute bottom-0 right-0 text-gray-500 p-2 rounded-lg hover:brightness-[120%] cursor-pointer pr-0"><svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-copy"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7m0 2.667a2.667 2.667 0 0 1 2.667 -2.667h8.666a2.667 2.667 0 0 1 2.667 2.667v8.666a2.667 2.667 0 0 1 -2.667 2.667h-8.666a2.667 2.667 0 0 1 -2.667 -2.667z" /><path d="M4.012 16.737a2.005 2.005 0 0 1 -1.012 -1.737v-10c0 -1.1 .9 -2 2 -2h10c.75 0 1.158 .385 1.5 1" /></svg></button>
+  </div>
   <button type="submit" class="curf bg-teal-700 p-4 text-white mt-4 w-1/3 rounded-lg hover:brightness-[120%]">Enhance prompt</button>
+  <div id="errorMessage" class="text-red-500 mt-4 hidden"></div>
 </form>
 
 <style>
   textarea {
     form-sizing: content;
   }
+  #copyButton {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+  }
 </style>
 
 <script>
+  document.querySelector('form').addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const prompt = (document.querySelector('#prompt') as HTMLTextAreaElement).value;
+    const url = `/api/enhancer?prompt=${prompt}`;
+    const button = document.querySelector('button[type="submit"]') as HTMLButtonElement;
+    const errorMessage = document.querySelector('#errorMessage') as HTMLDivElement;
+
+    button.disabled = true;
+    button.textContent = 'Loading...';
+    errorMessage.classList.add('hidden');
+    errorMessage.textContent = '';
+
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`API error: ${response.statusText}`);
+      }
+      const data = await response.json();
+      const enhancedPrompt = data.enhancedPrompt;
+
+      if (enhancedPrompt) {
+        (document.querySelector('#prompt') as HTMLTextAreaElement).value = enhancedPrompt;
+      }
+    } catch (error) {
+      console.error('Error fetching enhanced prompt:', error);
+      errorMessage.textContent = 'Error fetching enhanced prompt. Please try again.';
+      errorMessage.classList.remove('hidden');
+    } finally {
+      button.disabled = false;
+      button.textContent = 'Enhance prompt';
+    }
+  });
+
+  document.querySelector('#copyButton').addEventListener('click', async () => {
+    const textarea = document.querySelector('#prompt') as HTMLTextAreaElement;
+    await navigator.clipboard.writeText(textarea.value);
+    const copyButton = document.querySelector('#copyButton') as HTMLButtonElement;
+    const originalIcon = copyButton.innerHTML;
+    copyButton.innerHTML = '<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="green"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-check"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l5 5l10 -10" /></svg>';
+    setTimeout(() => {
+      copyButton.innerHTML = originalIcon;
+    }, 600);
+  });
 </script>
