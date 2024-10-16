@@ -1,12 +1,16 @@
+import { API_KEY } from "astro:env/server";
+
 export const GET = async ({ params, request }) => {
   const url = new URL(request.url);
+  const apiKey = url.searchParams.get('apiKey');
+  console.log(apiKey);
   const prompt = url.searchParams.get('prompt');
 
   const response = await fetch("https://ai-api.koyeb.app/api/enhancer/enhance", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": import.meta.env.API_KEY
+      "Authorization": API_KEY
     },
     body: JSON.stringify({ prompt })
   });
